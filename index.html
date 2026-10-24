@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PromptCraft - An academic web application for structured AI prompt generation, optimization, and prompt engineering using HTML5, CSS3, and ES6 JavaScript.">
+  <title>PromptCraft — AI Prompt Generator & Improver</title>
+  
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  
+  <!-- Google Fonts: Inter for UI and JetBrains Mono for Prompts/Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand">
+        <img src="assets/logo.svg" alt="PromptCraft Logo" class="brand-logo" width="36" height="36">
+        <div class="brand-text">
+          <h1 class="brand-title">PromptCraft</h1>
+          <span class="brand-tag">AI Prompt Studio</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" role="tablist" aria-label="Main Navigation Tabs">
+        <button type="button" class="tab-btn active" role="tab" id="tab-btn-generator" aria-selected="true" aria-controls="view-generator" data-tab="generator">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span>Generator</span>
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-btn-improver" aria-selected="false" aria-controls="view-improver" data-tab="improver">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span>Improver</span>
+        </button>
+        <button type="button" class="tab-btn" role="tab" id="tab-btn-library" aria-selected="false" aria-controls="view-library" data-tab="library">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <span>Saved Prompts</span>
+          <span class="badge" id="saved-count-badge">0</span>
+        </button>
+      </nav>
+
+      <!-- Utility Actions -->
+      <div class="header-actions">
+        <!-- API Settings Modal Button -->
+        <button type="button" class="icon-btn" id="btn-api-modal" aria-label="Gemini API Configuration" title="Configure Gemini API Key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span class="api-status-dot" id="header-api-status" title="API Status: Offline Template Mode"></span>
+        </button>
+
+        <!-- Light / Dark Theme Switcher -->
+        <button type="button" class="icon-btn" id="btn-theme-toggle" aria-label="Toggle Light and Dark Theme" title="Switch Theme">
+          <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-content" id="main-content">
+    
+    <!-- Hero Banner -->
+    <section class="hero-section" aria-labelledby="hero-heading">
+      <div class="hero-container">
+        <div class="hero-badge">
+          <span class="hero-badge-pulse"></span>
+          <span>B.E. CSE Internship Capstone Project &bull; Generative AI & Prompt Engineering</span>
+        </div>
+        <h2 id="hero-heading" class="hero-title">
+          Master the Art of Prompting with <span class="gradient-text">PromptCraft</span>
+        </h2>
+        <p class="hero-subtitle">
+          Transform vague ideas into high-performance, structured prompts using industry-standard frameworks (Role, Task, Context, Constraints, and Format). Works instantly offline with optional Gemini AI integration.
+        </p>
+
+        <!-- Quick Feature Chips -->
+        <div class="hero-features">
+          <div class="feature-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>RTFC Framework Engine</span>
+          </div>
+          <div class="feature-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>100% Client-Side Privacy</span>
+          </div>
+          <div class="feature-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>Live Quality Strength Scorer</span>
+          </div>
+          <div class="feature-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+            <span>LocalStorage Persistence</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB VIEW 1: PROMPT GENERATOR -->
+    <section class="tab-view active" id="view-generator" role="tabpanel" aria-labelledby="tab-btn-generator">
+      <div class="view-container">
+        
+        <!-- Category Selection Section -->
+        <div class="section-card category-section">
+          <div class="section-header">
+            <div>
+              <h3 class="section-title">1. Choose a Task Category</h3>
+              <p class="section-subtitle">Select a target domain to auto-configure suggested personas, tones, and formatting requirements.</p>
+            </div>
+            <span class="active-category-pill" id="selected-category-pill">Active: Coding & Debugging</span>
+          </div>
+
+          <!-- 7 Category Cards Grid -->
+          <div class="category-grid" role="radiogroup" aria-label="Task Categories">
+            
+            <button type="button" class="category-card active" data-category="coding" role="radio" aria-checked="true">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <h4 class="category-name">Coding & Debugging</h4>
+              <p class="category-desc">Algorithms, code reviews, bug fixes, refactoring, and test cases.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="education" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <h4 class="category-name">Education & Learning</h4>
+              <p class="category-desc">Socratic tutoring, concept simplification, study plans, and exam prep.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="content" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </div>
+              <h4 class="category-name">Content Writing</h4>
+              <p class="category-desc">Articles, blog posts, copywriting, newsletters, and creative writing.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="resume" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <h4 class="category-name">Resume & Career</h4>
+              <p class="category-desc">STAR-format interview prep, LinkedIn summaries, and cover letters.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="presentation" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <h4 class="category-name">Presentation Creation</h4>
+              <p class="category-desc">Slide deck structure, pitch decks, executive speeches, and outlines.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="image" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <h4 class="category-name">Image Generation</h4>
+              <p class="category-desc">Midjourney, DALL-E, & Stable Diffusion prompts with aspect ratios.</p>
+            </button>
+
+            <button type="button" class="category-card" data-category="business" role="radio" aria-checked="false">
+              <div class="category-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <h4 class="category-name">Business & Productivity</h4>
+              <p class="category-desc">SWOT analysis, meeting minutes, executive summaries, and standard operating procedures (SOPs).</p>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- 2-Column Split: Generator Form & Live Output Deck -->
+        <div class="generator-split-layout">
+          
+          <!-- Column 1: Input Form -->
+          <div class="section-card form-card">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title">2. Define Prompt Parameters</h3>
+                <p class="section-subtitle">Structure your prompt dimensions following the RTFC engineering model.</p>
+              </div>
+              <button type="button" class="text-btn" id="btn-load-sample-inputs" title="Fill form with sample data for demonstration">
+                Load Sample
+              </button>
+            </div>
+
+            <form id="generator-form" novalidate>
+              
+              <!-- Field 1: Core Task / Objective (Required) -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label for="input-task" class="form-label">
+                    <span>Task / Objective</span>
+                    <span class="required-star" aria-hidden="true">*</span>
+                  </label>
+                  <span class="char-counter" id="task-char-counter">0/500</span>
+                </div>
+                <textarea 
+                  id="input-task" 
+                  name="task" 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="e.g., Write a thread-safe LRU Cache in Python with O(1) get and put operations..." 
+                  required 
+                  aria-describedby="task-error-msg"
+                  maxlength="500"></textarea>
+                <div class="input-error" id="task-error-msg" role="alert" aria-live="polite"></div>
+              </div>
+
+              <!-- Field 2: AI Role / Persona (Optional/Recommended) -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label for="input-role" class="form-label">Role / Persona</label>
+                  <span class="field-hint">Who should the AI act as?</span>
+                </div>
+                <input 
+                  type="text" 
+                  id="input-role" 
+                  name="role" 
+                  class="form-control" 
+                  placeholder="e.g., Senior Systems Software Engineer and Tech Lead">
+                <!-- Suggested Role Chips (dynamically updated by JS) -->
+                <div class="suggestion-chips-container" id="role-suggestions" aria-label="Suggested Roles">
+                  <!-- Injected via JavaScript -->
+                </div>
+              </div>
+
+              <!-- Field 3: Context & Target Audience -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label for="input-context" class="form-label">Background Context & Audience</label>
+                  <span class="field-hint">Target knowledge level & environment</span>
+                </div>
+                <textarea 
+                  id="input-context" 
+                  name="context" 
+                  class="form-control" 
+                  rows="2" 
+                  placeholder="e.g., For a high-load microservices architecture running on AWS ECS, target audience is senior backend engineers."></textarea>
+              </div>
+
+              <!-- Field 4 & 5: Tone and Output Format Grid -->
+              <div class="form-row-2col">
+                <!-- Tone Selection -->
+                <div class="form-group">
+                  <label for="select-tone" class="form-label">Preferred Tone</label>
+                  <select id="select-tone" name="tone" class="form-control select-control">
+                    <option value="Professional & Technical" selected>Professional & Technical</option>
+                    <option value="Clear & Concise">Clear & Concise</option>
+                    <option value="Educational & Step-by-Step">Educational & Step-by-Step</option>
+                    <option value="Conversational & Friendly">Conversational & Friendly</option>
+                    <option value="Executive & Persuasive">Executive & Persuasive</option>
+                    <option value="Creative & Engaging">Creative & Engaging</option>
+                    <option value="custom">-- Custom Tone --</option>
+                  </select>
+                  <input type="text" id="input-custom-tone" class="form-control custom-sub-input hidden" placeholder="Enter custom tone...">
+                </div>
+
+                <!-- Output Format Selection -->
+                <div class="form-group">
+                  <label for="select-format" class="form-label">Desired Output Format</label>
+                  <select id="select-format" name="format" class="form-control select-control">
+                    <option value="Code Block with Detailed Comments" selected>Code Block with Detailed Comments</option>
+                    <option value="Step-by-Step Implementation Guide">Step-by-Step Implementation Guide</option>
+                    <option value="Markdown Table Summary">Markdown Table Summary</option>
+                    <option value="Bullet Points with Key Highlights">Bullet Points with Key Highlights</option>
+                    <option value="Standard JSON Schema">Standard JSON Schema</option>
+                    <option value="Executive One-Pager Summary">Executive One-Pager Summary</option>
+                    <option value="custom">-- Custom Format --</option>
+                  </select>
+                  <input type="text" id="input-custom-format" class="form-control custom-sub-input hidden" placeholder="Enter custom format...">
+                </div>
+              </div>
+
+              <!-- Field 6: Constraints & Negative Rules -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label for="input-constraints" class="form-label">Constraints & Exclusions</label>
+                  <span class="field-hint">Negative prompts (What to avoid)</span>
+                </div>
+                <textarea 
+                  id="input-constraints" 
+                  name="constraints" 
+                  class="form-control" 
+                  rows="2" 
+                  placeholder="e.g., Do not use any third-party dependencies. Include time/space complexity analysis. Limit to under 200 lines."></textarea>
+              </div>
+
+              <!-- Form Buttons -->
+              <div class="form-actions-row">
+                <button type="submit" class="btn btn-primary btn-sparkle" id="btn-generate-prompt">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                  <span>Generate Structured Prompt</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-reset-form">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Reset</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Column 2: Live Prompt Output & Strength Deck -->
+          <div class="section-card output-card">
+            
+            <!-- Result Header with Strength Meter & Engine Badge -->
+            <div class="output-header">
+              <div>
+                <h3 class="section-title">3. Generated Prompt Result</h3>
+                <div class="engine-badge-row">
+                  <span class="engine-badge template" id="output-engine-badge">
+                    <span class="dot"></span>
+                    <span>Template Engine (Deterministic)</span>
+                  </span>
+                  <span class="category-tag-badge" id="output-category-tag">Coding</span>
+                </div>
+              </div>
+
+              <!-- Strength Meter Meter Widget -->
+              <div class="strength-widget" id="strength-widget">
+                <div class="strength-label-row">
+                  <span class="strength-title">Prompt Strength</span>
+                  <span class="strength-score" id="strength-score-text">0%</span>
+                </div>
+                <div class="strength-bar-track">
+                  <div class="strength-bar-fill" id="strength-bar-fill" style="width: 0%;"></div>
+                </div>
+                <span class="strength-verdict" id="strength-verdict">Awaiting input...</span>
+              </div>
+            </div>
+
+            <!-- Output Container -->
+            <div class="output-box-container">
+              <!-- Placeholder State (Before generation) -->
+              <div class="output-placeholder" id="output-placeholder">
+                <div class="placeholder-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <h4>No Prompt Generated Yet</h4>
+                <p>Fill out the form on the left and click <strong>"Generate Structured Prompt"</strong>, or click <strong>"Load Sample"</strong> for an instant preview.</p>
+              </div>
+
+              <!-- Ready Output Display (Hidden initially) -->
+              <div class="output-content-wrapper hidden" id="output-content-wrapper">
+                <label for="output-textarea" class="visually-hidden">Generated Prompt Content</label>
+                <textarea 
+                  id="output-textarea" 
+                  class="output-textarea" 
+                  readonly 
+                  aria-label="Generated AI Prompt"></textarea>
+                
+                <!-- In-place Editing Indicator Banner -->
+                <div class="editing-banner hidden" id="editing-banner">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>Edit mode active. Click <strong>"Done Editing"</strong> to lock in your custom edits.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Output Action Deck Toolbar -->
+            <div class="output-actions-toolbar" id="output-actions-toolbar">
+              <button type="button" class="btn btn-primary" id="btn-copy-prompt" disabled>
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span id="btn-copy-text">Copy to Clipboard</span>
+              </button>
+
+              <button type="button" class="btn btn-secondary" id="btn-edit-prompt" disabled>
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span id="btn-edit-text">Edit Prompt</span>
+              </button>
+
+              <button type="button" class="btn btn-secondary" id="btn-regenerate-prompt" disabled title="Recompile with stylistic variation">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                <span>Regenerate</span>
+              </button>
+
+              <button type="button" class="btn btn-secondary" id="btn-save-prompt" disabled>
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <span>Save to Library</span>
+              </button>
+
+              <button type="button" class="btn btn-ghost" id="btn-clear-output" disabled title="Clear current result">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>Clear</span>
+              </button>
+            </div>
+
+            <!-- Prompt Improvement Tips Accordion -->
+            <div class="quality-tips-box" id="quality-tips-box">
+              <div class="tips-header" id="tips-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span class="tips-title">Prompt Engineering Optimization Checklist:</span>
+              </div>
+              <ul class="tips-list" id="tips-list">
+                <li id="tip-role">&bull; <strong>Persona:</strong> Add an authoritative role (e.g., Staff Engineer) to calibrate domain expertise.</li>
+                <li id="tip-context">&bull; <strong>Context:</strong> Explain target audience and deployment environment.</li>
+                <li id="tip-constraints">&bull; <strong>Guardrails:</strong> Define negative constraints (what the AI must NOT do).</li>
+                <li id="tip-format">&bull; <strong>Output Format:</strong> State precise output structure (Markdown table, JSON, code).</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB VIEW 2: PROMPT IMPROVER -->
+    <section class="tab-view" id="view-improver" role="tabpanel" aria-labelledby="tab-btn-improver" hidden>
+      <div class="view-container">
+        
+        <div class="section-card improver-card">
+          <div class="section-header">
+            <div>
+              <h3 class="section-title">Prompt Improver & Analyzer</h3>
+              <p class="section-subtitle">
+                Paste any brief or vague prompt below. PromptCraft will analyze semantic weaknesses and expand it into a high-precision, production-ready instruction.
+              </p>
+            </div>
+            
+            <!-- Improver Engine Mode Indicator -->
+            <div class="engine-mode-pill" id="improver-engine-indicator">
+              <span class="dot"></span>
+              <span id="improver-mode-text">Engine: Rule-Based Heuristic (Offline)</span>
+            </div>
+          </div>
+
+          <!-- Improver Input Box -->
+          <div class="improver-input-container">
+            <div class="form-label-row">
+              <label for="input-raw-prompt" class="form-label">
+                <span>Raw / Unoptimized Prompt</span>
+                <span class="required-star" aria-hidden="true">*</span>
+              </label>
+              <div class="improver-quick-actions">
+                <button type="button" class="text-btn" id="btn-load-improver-sample">Load Example Bad Prompt</button>
+                <button type="button" class="text-btn" id="btn-clear-improver-input">Clear</button>
+              </div>
+            </div>
+
+            <textarea 
+              id="input-raw-prompt" 
+              class="form-control" 
+              rows="4" 
+              placeholder="e.g., Write a python script to sort a list of users by their age and email..."></textarea>
+            
+            <!-- Optimization Options Checkboxes -->
+            <div class="optimization-options-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-inject-role" checked>
+                <span>Inject Domain Persona (Role)</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-add-constraints" checked>
+                <span>Add Edge-Case Guardrails & Constraints</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-enforce-format" checked>
+                <span>Enforce Clean Output Structure</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="opt-add-cot" checked>
+                <span>Enable Chain-of-Thought Reasoning</span>
+              </label>
+            </div>
+
+            <!-- Improver Action Buttons -->
+            <div class="form-actions-row">
+              <button type="button" class="btn btn-primary btn-sparkle" id="btn-run-improver">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Optimize & Improve Prompt</span>
+              </button>
+              
+              <button type="button" class="btn btn-secondary" id="btn-toggle-ai-mode">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span id="btn-ai-mode-text">Switch to Gemini AI Mode</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Improver Loading State -->
+          <div class="improver-loading-state hidden" id="improver-loading-state" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <p id="improver-loading-text">Analyzing prompt syntax and applying prompt engineering frameworks...</p>
+          </div>
+
+          <!-- Improver Results Side-by-Side Comparison (Hidden until improved) -->
+          <div class="improver-results-container hidden" id="improver-results-container">
+            <h4 class="comparison-title">Prompt Optimization Analysis</h4>
+
+            <!-- Side-by-Side Comparison -->
+            <div class="comparison-grid">
+              
+              <!-- Original Prompt Card -->
+              <div class="comparison-card original-card">
+                <div class="comparison-card-header">
+                  <span class="card-status-badge badge-warning">Original Prompt (Under-Specified)</span>
+                  <span class="word-count" id="original-word-count">0 words</span>
+                </div>
+                <div class="comparison-text-box" id="display-original-prompt"></div>
+                <div class="detected-weaknesses" id="detected-weaknesses">
+                  <h5>Detected Weaknesses:</h5>
+                  <ul id="weaknesses-list">
+                    <!-- Populated dynamically -->
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Improved Prompt Card -->
+              <div class="comparison-card improved-card">
+                <div class="comparison-card-header">
+                  <span class="card-status-badge badge-success" id="improved-badge-label">Improved & Structured Prompt</span>
+                  <span class="word-count" id="improved-word-count">0 words</span>
+                </div>
+                <textarea id="display-improved-prompt" class="comparison-textarea" readonly></textarea>
+                
+                <div class="improvements-log" id="improvements-log">
+                  <h5>Key Optimizations Applied:</h5>
+                  <ul id="improvements-list">
+                    <!-- Populated dynamically -->
+                  </ul>
+                </div>
+
+                <div class="improved-card-actions">
+                  <button type="button" class="btn btn-primary" id="btn-copy-improved">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Improved Prompt</span>
+                  </button>
+                  <button type="button" class="btn btn-secondary" id="btn-save-improved">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    <span>Save to Library</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB VIEW 3: SAVED PROMPTS LIBRARY -->
+    <section class="tab-view" id="view-library" role="tabpanel" aria-labelledby="tab-btn-library" hidden>
+      <div class="view-container">
+        
+        <div class="section-card library-card">
+          
+          <!-- Library Header & Controls Toolbar -->
+          <div class="library-header-row">
+            <div>
+              <h3 class="section-title">Saved Prompts Repository</h3>
+              <p class="section-subtitle">Your collection of structured prompts, persisted locally in your browser storage.</p>
+            </div>
+            
+            <div class="library-top-actions">
+              <button type="button" class="btn btn-secondary" id="btn-export-prompts" title="Download saved prompts as a JSON backup file">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export JSON</span>
+              </button>
+              <button type="button" class="btn btn-danger-outline" id="btn-clear-all-prompts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>Clear All</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Filter Controls Bar -->
+          <div class="library-filter-toolbar">
+            
+            <!-- Search Input -->
+            <div class="search-input-wrapper">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input 
+                type="text" 
+                id="search-saved-prompts" 
+                class="form-control search-input" 
+                placeholder="Search saved prompts by title, task, or role...">
+              <button type="button" class="clear-search-btn hidden" id="btn-clear-search" aria-label="Clear search input">&times;</button>
+            </div>
+
+            <!-- Category Filter Dropdown -->
+            <div class="filter-dropdown-wrapper">
+              <label for="filter-category" class="visually-hidden">Filter by Category</label>
+              <select id="filter-category" class="form-control select-control filter-select">
+                <option value="all">All Categories (All)</option>
+                <option value="Coding & Debugging">Coding & Debugging</option>
+                <option value="Education & Learning">Education & Learning</option>
+                <option value="Content Writing">Content Writing</option>
+                <option value="Resume & Career">Resume & Career</option>
+                <option value="Presentation Creation">Presentation Creation</option>
+                <option value="Image Generation">Image Generation</option>
+                <option value="Business & Productivity">Business & Productivity</option>
+              </select>
+            </div>
+
+            <!-- Sort By Dropdown -->
+            <div class="filter-dropdown-wrapper">
+              <label for="sort-saved" class="visually-hidden">Sort Saved Prompts</label>
+              <select id="sort-saved" class="form-control select-control filter-select">
+                <option value="newest" selected>Sort: Newest First</option>
+                <option value="oldest">Sort: Oldest First</option>
+                <option value="score">Sort: Highest Strength Score</option>
+                <option value="title">Sort: Alphabetical Title</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Saved Prompts Grid (Injected via JS) -->
+          <div class="saved-prompts-grid" id="saved-prompts-grid" role="region" aria-label="Saved Prompts List">
+            <!-- Dynamically populated by app.js -->
+          </div>
+
+          <!-- Empty State (Shown when no prompts match or library is empty) -->
+          <div class="library-empty-state" id="library-empty-state">
+            <div class="empty-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h4 class="empty-title" id="empty-state-title">No Saved Prompts Found</h4>
+            <p class="empty-desc" id="empty-state-desc">You have not saved any prompts yet. Generate a structured prompt and click "Save to Library" to build your repository.</p>
+            <button type="button" class="btn btn-primary" id="btn-empty-go-generate">Create Your First Prompt</button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Application Footer -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <img src="assets/logo.svg" alt="PromptCraft Logo" width="24" height="24">
+          <span class="footer-title">PromptCraft</span>
+        </div>
+        <p class="footer-disclaimer">
+          An Academic Capstone Project in Generative AI, Prompt Engineering & Modern Web Development. Built with HTML5, CSS3, Vanilla ES6 JavaScript & LocalStorage.
+        </p>
+      </div>
+
+      <div class="footer-meta">
+        <div class="meta-item">
+          <span class="meta-label">Framework:</span>
+          <span class="meta-val">RTFC / CREATE Standards</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Architecture:</span>
+          <span class="meta-val">Zero-Dependency Single Page App</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">API Status:</span>
+          <span class="meta-val" id="footer-api-status">Optional Gemini Client (Client-Side)</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: GEMINI API KEY CONFIGURATION MODAL -->
+  <div class="modal-backdrop hidden" id="modal-api-settings" role="dialog" aria-modal="true" aria-labelledby="modal-api-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div>
+          <h3 class="modal-title" id="modal-api-title">Gemini API Settings</h3>
+          <p class="modal-subtitle">Configure optional live AI capabilities via Google Gemini.</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-api-modal" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="api-info-callout">
+          <div class="callout-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <div class="callout-text">
+            <strong>Security & Privacy Notice:</strong> PromptCraft operates entirely on the client side. Your API key is stored only in your browser's temporary session storage or memory. It is never logged or transmitted to any third-party server.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-gemini-key" class="form-label">Google Gemini API Key</label>
+          <div class="password-input-group">
+            <input 
+              type="password" 
+              id="input-gemini-key" 
+              class="form-control" 
+              placeholder="Paste AIzaSy... API key here" 
+              autocomplete="off">
+            <button type="button" class="icon-toggle-btn" id="btn-toggle-key-visibility" aria-label="Toggle Key Visibility" title="Show/Hide Key">
+              <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <span class="field-hint">Leave blank to use the built-in offline template & heuristic engine.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="select-gemini-model" class="form-label">Active Gemini Model</label>
+          <select id="select-gemini-model" class="form-control select-control">
+            <option value="gemini-2.5-flash" selected>gemini-2.5-flash (Recommended: Ultra-fast & High Precision)</option>
+            <option value="gemini-2.5-pro">gemini-2.5-pro (Deep reasoning & Complex analysis)</option>
+          </select>
+        </div>
+
+        <div class="api-status-display" id="modal-api-status-box">
+          <span class="status-indicator-dot" id="modal-status-dot"></span>
+          <span id="modal-status-text">Status: Offline Template Engine Active (No API Key Required)</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-remove-api-key">Remove Key</button>
+        <button type="button" class="btn btn-primary" id="btn-save-api-key">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CONFIRMATION MODAL -->
+  <div class="modal-backdrop hidden" id="modal-confirm" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-confirm-title">Confirm Action</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-confirm-modal" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-confirm-msg">Are you sure you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btn-confirm-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-proceed">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true">
+    <!-- Toasts injected dynamically via JavaScript -->
+  </div>
+
+  <!-- Core JavaScript Application -->
+  <script src="js/app.js"></script>
+</body>
+</html>

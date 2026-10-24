@@ -1,0 +1,7 @@
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# Local environment & secrets (PromptCraft never commits secrets)
+.env
+*.local
